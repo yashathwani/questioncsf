@@ -32,6 +32,9 @@ public class TicketServiceImp implements TicketService {
     private VehicleRepository vehicleRepo;
     private ParkingLotRepository parkinglotRepo;
     private SpotAssignmentStrategy spotAssignmentStrategy;
+    TicketServiceImp(){
+        
+    }
     TicketServiceImp(GateRepository gateRepo,VehicleRepository vehicleRepo,ParkingLotRepository parkinglotRepo,SpotAssignmentStrategy spotAssignmentStrategy){
      this.gateRepo=gateRepo;
      this.vehicleRepo=vehicleRepo;
