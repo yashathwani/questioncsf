@@ -24,16 +24,19 @@ import com.scaler.parking_lot.respositories.GateRepositoryImp;
 import com.scaler.parking_lot.respositories.ParkingLotRepository;
 import com.scaler.parking_lot.respositories.VehicleRepository;
 import com.scaler.parking_lot.respositories.VehicleRepositoryImp;
+import com.scaler.parking_lot.strategies.assignment.SpotAssignmentStrategy;
 
 @Service
 public class TicketServiceImp implements TicketService {
     private GateRepository gateRepo;
     private VehicleRepository vehicleRepo;
     private ParkingLotRepository parkinglotRepo;
-    TicketServiceImp(GateRepository gateRepo,VehicleRepository vehicleRepo,ParkingLotRepository parkinglotRepo){
+    private SpotAssignmentStrategy spotAssignmentStrategy;
+    TicketServiceImp(GateRepository gateRepo,VehicleRepository vehicleRepo,ParkingLotRepository parkinglotRepo,SpotAssignmentStrategy spotAssignmentStrategy){
      this.gateRepo=gateRepo;
      this.vehicleRepo=vehicleRepo;
      this.parkinglotRepo=parkinglotRepo;
+     this.spotAssignmentStrategy=spotAssignmentStrategy;
     }
 
     @Override
@@ -76,53 +79,19 @@ public class TicketServiceImp implements TicketService {
                 }
             
                 ParkingLot lotget = lot.get();
-                List<ParkingFloor> floors = lotget.getParkingFloors();
-            
-                ParkingSpot selectedSpot = null;
-                ParkingFloor selectedFloor = null;
-                int minAvailableSpots = Integer.MAX_VALUE;
-            
-                for (ParkingFloor floor : floors) {
-                    if (floor.getStatus()!=FloorStatus.OPERATIONAL) {
-                        continue; // Skip non-operational floors
-                    }
-            
-                    int availableSpots = 0;
-                    ParkingSpot nearestSpot = null;
-                    int nearestSpotNumber = Integer.MAX_VALUE;
-            
-                    for (ParkingSpot spot : floor.getSpots()) {
-                        if (spot.getStatus() == ParkingSpotStatus.AVAILABLE &&
-                            spot.getSupportedVehicleType() == v.getVehicleType()) {
-                            availableSpots++;
-                            if (spot.getNumber() < nearestSpotNumber) {
-                                nearestSpotNumber = spot.getNumber();
-                                nearestSpot = spot;
-                            }
-                        }
-                    }
-            
-                    // Update if this floor has fewer available spots
-                    if (availableSpots > 0 && availableSpots < minAvailableSpots) {
-                        minAvailableSpots = availableSpots;
-                        selectedFloor = floor;
-                        selectedSpot = nearestSpot;
-                    }
-                }
-            
-                if (selectedSpot == null) {
+                Optional<ParkingSpot> selectedSpot=spotAssignmentStrategy.assignSpot(lotget, v.getVehicleType());
+                if (selectedSpot.isEmpty()) {
                     throw new ParkingSpotNotAvailableException("No available parking spot found for the vehicle type.");
                 }
-            
+                 ParkingSpot Spot=selectedSpot.get();
                 // Assign Spot to Ticket
-                selectedSpot.setStatus(ParkingSpotStatus.OCCUPIED);
-                ticket.setParkingSpot(selectedSpot);
+                Spot.setStatus(ParkingSpotStatus.OCCUPIED);
+                ticket.setParkingSpot(Spot);
             
                 return ticket;
            
             
            
-        // TODO Auto-generated method stub
     }
     
 }
