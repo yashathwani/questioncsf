@@ -23,4 +23,19 @@ public class GenerateTicketResponseDto {
     public void setResponseStatus(ResponseStatus responseStatus) {
         this.responseStatus = responseStatus;
     }
+    public GenerateTicketResponseDto from(Ticket ticket){
+        GenerateTicketResponseDto responseDto=new GenerateTicketResponseDto();
+        responseDto.setTicket(ticket);
+        if(ticket==null)
+        {
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+        else
+        {
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+
+        return responseDto;
+
+    }
 }

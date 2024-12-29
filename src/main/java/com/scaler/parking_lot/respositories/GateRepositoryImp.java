@@ -9,17 +9,25 @@ import com.scaler.parking_lot.models.Gate;
 
 @Repository
 public class GateRepositoryImp implements GateRepository {
-   HashMap<Long,Gate> gate=new HashMap<>();
+   HashMap<Long,Gate> gates=new HashMap<>();
+   private Long id=1L;
     @Override
     public Optional<Gate> findById(long gateId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        if(gates.containsKey(gateId))
+        {
+           return Optional.of(gates.get(gateId));
+        }
+        else
+        {
+            return Optional.of(null);
+        }
     }
 
     @Override
     public Gate save(Gate gate) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        gate.setId(id);
+        gates.put(id,gate);
+        return gate;
     }
     
 }
