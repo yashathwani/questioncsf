@@ -15,6 +15,6 @@ public class TicketController {
     }
 
     public GenerateTicketResponseDto generateTicket(GenerateTicketRequestDto requestDto){
-        return null;
+        
     }
 }
